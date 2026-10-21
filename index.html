@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fbf8f5" />
+    <title>kindred — meet someone lovely</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #282624;
+        --muted: #85817d;
+        --paper: #fbf8f5;
+        --card: #fffefd;
+        --line: #eee8e3;
+        --rose: #d86470;
+        --rose-dark: #c84f5d;
+        --blush: #f8e8e7;
+        --green: #668b70;
+        --shadow: 0 22px 60px rgb(72 48 42 / 9%);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        min-width: 300px;
+        min-height: 100vh;
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      button { font: inherit; }
+      button:focus-visible, a:focus-visible {
+        outline: 3px solid #d8647070;
+        outline-offset: 3px;
+      }
+      .app-shell { min-height: 100vh; }
+      .topbar {
+        height: 78px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5.1%;
+        background: rgb(255 254 253 / 88%);
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        text-decoration: none;
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -1.3px;
+      }
+      .brand-mark {
+        display: grid;
+        width: 31px;
+        height: 31px;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--rose);
+        color: white;
+      }
+      .brand-mark svg { width: 18px; height: 18px; }
+      .topbar-center {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .location-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #8da991;
+        box-shadow: 0 0 0 4px #8da99120;
+      }
+      .topbar-actions { display: flex; align-items: center; gap: 18px; }
+      .icon-button {
+        position: relative;
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: white;
+        color: #625d59;
+        cursor: pointer;
+        transition: transform .18s, border-color .18s, color .18s;
+      }
+      .icon-button:hover { transform: translateY(-2px); border-color: #e8c5c5; color: var(--rose); }
+      .icon-button svg { width: 19px; height: 19px; }
+      .notification {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 7px;
+        height: 7px;
+        border: 1px solid white;
+        border-radius: 50%;
+        background: var(--rose);
+      }
+      .avatar-small {
+        width: 39px;
+        height: 39px;
+        border: 2px solid white;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 0 1px var(--line);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 224px minmax(380px, 1fr) 286px;
+        gap: clamp(24px, 3.3vw, 54px);
+        width: min(1440px, 100%);
+        min-height: calc(100vh - 78px);
+        margin: 0 auto;
+        padding: 35px 5.1% 45px;
+      }
+      .sidebar { display: flex; flex-direction: column; min-height: 710px; }
+      .profile-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 0 27px;
+        border-bottom: 1px solid var(--line);
+      }
+      .profile-summary img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+      .profile-summary strong { display: block; font-size: 13px; font-weight: 700; }
+      .profile-summary span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+      .nav-label {
+        margin: 25px 0 12px 10px;
+        color: #aaa39e;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.35px;
+        text-transform: uppercase;
+      }
+      .nav-list { display: grid; gap: 6px; }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-height: 46px;
+        padding: 0 13px;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        color: #716c68;
+        text-align: left;
+        cursor: pointer;
+        transition: background .18s, color .18s;
+      }
+      .nav-item svg { width: 18px; height: 18px; }
+      .nav-item span { flex: 1; font-size: 13px; font-weight: 500; }
+      .nav-item:hover { background: #f5efeb; }
+      .nav-item.active { background: var(--blush); color: var(--rose-dark); }
+      .nav-count {
+        display: grid;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        place-items: center;
+        border-radius: 10px;
+        background: white;
+        color: var(--rose-dark);
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .sidebar-note {
+        margin-top: auto;
+        padding: 19px 16px;
+        border: 1px solid #f0e3dc;
+        border-radius: 16px;
+        background: #fffaf6;
+      }
+      .note-icon { color: var(--rose); font-size: 19px; }
+      .sidebar-note strong { display: block; margin: 9px 0 6px; font-size: 12px; }
+      .sidebar-note p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+
+      .main-content { min-width: 0; }
+      .section-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin: 5px 0 21px;
+      }
+      .eyebrow {
+        margin: 0 0 7px;
+        color: var(--rose);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.65px;
+        text-transform: uppercase;
+      }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 {
+        margin-bottom: 0;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(26px, 2.5vw, 34px);
+        font-weight: 600;
+        letter-spacing: -.8px;
+      }
+      .filter-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 13px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: white;
+        color: #625d59;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .filter-button svg { width: 15px; height: 15px; }
+      .discover-card {
+        position: relative;
+        overflow: hidden;
+        height: min(66vh, 590px);
+        min-height: 440px;
+        border-radius: 22px;
+        background: #ded4ce;
+        box-shadow: var(--shadow);
+        isolation: isolate;
+      }
+      .discover-photo {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 37%;
+        transition: opacity .25s;
+      }
+      .discover-card::after {
+        position: absolute;
+        z-index: -1;
+        inset: 35% 0 0;
+        background: linear-gradient(180deg, transparent 0%, rgb(24 22 21 / 12%) 24%, rgb(24 22 21 / 78%) 100%);
+        content: "";
+      }
+      .photo-count {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        display: flex;
+        width: calc(100% - 32px);
+        gap: 5px;
+        transform: translateX(-50%);
+      }
+      .photo-count span { height: 3px; flex: 1; border-radius: 4px; background: rgb(255 255 255 / 49%); }
+      .photo-count span:first-child { background: white; }
+      .verified {
+        position: absolute;
+        top: 36px;
+        left: 17px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border: 1px solid rgb(255 255 255 / 35%);
+        border-radius: 20px;
+        background: rgb(34 31 29 / 24%);
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        backdrop-filter: blur(8px);
+      }
+      .verified svg { width: 13px; height: 13px; }
+      .online {
+        position: absolute;
+        top: 38px;
+        right: 17px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: white;
+        font-size: 10px;
+        text-shadow: 0 1px 4px #3338;
+      }
+      .online::before { width: 6px; height: 6px; border-radius: 50%; background: #a4d3a5; content: ""; }
+      .card-info { position: absolute; right: 22px; bottom: 22px; left: 22px; color: white; }
+      .name-line { display: flex; align-items: baseline; gap: 8px; }
+      .name-line h2 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 31px;
+        font-weight: 600;
+        letter-spacing: -.6px;
+      }
+      .name-line span { font-size: 21px; font-weight: 400; }
+      .card-location { display: flex; align-items: center; gap: 5px; margin: 7px 0 14px; color: #ffffffdb; font-size: 11px; }
+      .card-location svg { width: 13px; height: 13px; }
+      .bio { max-width: 390px; margin: 0 0 14px; color: #fffffff0; font-size: 12px; line-height: 1.6; }
+      .interest-list { display: flex; flex-wrap: wrap; gap: 7px; }
+      .interest {
+        padding: 6px 10px;
+        border: 1px solid rgb(255 255 255 / 35%);
+        border-radius: 20px;
+        background: rgb(255 255 255 / 14%);
+        color: white;
+        font-size: 10px;
+        backdrop-filter: blur(6px);
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 22px 0 12px;
+      }
+      .action-button {
+        display: grid;
+        width: 54px;
+        height: 54px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: white;
+        color: #77716d;
+        box-shadow: 0 6px 17px rgb(53 36 32 / 7%);
+        cursor: pointer;
+        transition: transform .18s, box-shadow .18s, background .18s, color .18s;
+      }
+      .action-button:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 9px 22px rgb(53 36 32 / 12%); }
+      .action-button svg { width: 21px; height: 21px; }
+      .action-button.pass { width: 49px; height: 49px; color: #87817d; }
+      .action-button.like { width: 64px; height: 64px; border: 0; background: var(--rose); color: white; }
+      .action-button.like:hover { background: var(--rose-dark); }
+      .action-button.super { width: 49px; height: 49px; color: #7292c2; }
+      .caption { margin: 2px 0 0; color: #a39c97; font-size: 10px; text-align: center; }
+
+      .right-rail { padding-top: 7px; }
+      .rail-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 17px; }
+      .rail-heading h2 { margin: 0; font-family: "Playfair Display", serif; font-size: 19px; font-weight: 600; }
+      .rail-heading button { border: 0; background: none; color: var(--rose-dark); font-size: 10px; font-weight: 700; cursor: pointer; }
+      .likes-card {
+        position: relative;
+        display: flex;
+        min-height: 112px;
+        align-items: center;
+        gap: 13px;
+        overflow: hidden;
+        padding: 13px;
+        border: 1px solid #f0e2de;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #fff9f7, #f9eeed);
+      }
+      .blurred-likes { display: flex; flex: 0 0 76px; }
+      .blurred-likes img {
+        width: 49px;
+        height: 67px;
+        border: 3px solid white;
+        border-radius: 12px;
+        object-fit: cover;
+        filter: blur(3px);
+      }
+      .blurred-likes img + img { margin-left: -21px; }
+      .likes-copy strong { display: block; margin-bottom: 5px; font-size: 12px; }
+      .likes-copy span { display: block; color: var(--muted); font-size: 10px; line-height: 1.5; }
+      .likes-copy button {
+        margin-top: 9px;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: var(--rose-dark);
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .rail-divider { height: 1px; margin: 26px 0 22px; background: var(--line); }
+      .match-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px;
+        border-radius: 14px;
+        background: #f1f3ee;
+      }
+      .match-note-icon {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        place-items: center;
+        border-radius: 11px;
+        background: #e2e9df;
+        color: #68806a;
+      }
+      .match-note-icon svg { width: 17px; height: 17px; }
+      .match-note strong { display: block; margin: 2px 0 5px; font-size: 11px; }
+      .match-note p { margin: 0; color: #777a72; font-size: 10px; line-height: 1.55; }
+      .recent-heading { margin: 25px 0 13px; font-size: 12px; font-weight: 700; }
+      .recent-list { display: grid; gap: 12px; }
+      .recent-match { display: flex; align-items: center; gap: 10px; }
+      .recent-match img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+      .recent-match strong { display: block; font-size: 11px; font-weight: 600; }
+      .recent-match span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+      .new-pill { margin-left: auto; padding: 4px 7px; border-radius: 9px; background: #f8e6e5; color: var(--rose-dark); font-size: 9px; font-weight: 700; }
+      .prompt-card {
+        margin-top: 27px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: white;
+      }
+      .prompt-card .eyebrow { margin-bottom: 8px; font-size: 9px; }
+      .prompt-card p { margin-bottom: 0; font-family: "Playfair Display", serif; font-size: 15px; line-height: 1.45; }
+      .prompt-card span { display: block; margin-top: 8px; color: var(--muted); font-size: 10px; }
+
+      .page-view[hidden], #discover-view[hidden] { display: none; }
+      .page-view { padding: 5px 0 30px; }
+      .page-header { margin-bottom: 24px; }
+      .page-header h1 { margin-bottom: 8px; }
+      .page-description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+      .people-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .person-card {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background: var(--card);
+        box-shadow: 0 8px 24px rgb(72 48 42 / 5%);
+      }
+      .person-card-photo { display: block; width: 100%; height: 215px; object-fit: cover; object-position: center 35%; }
+      .person-card-body { padding: 14px; }
+      .person-card-title { display: flex; align-items: baseline; gap: 7px; margin: 0 0 5px; font-family: "Playfair Display", serif; font-size: 19px; }
+      .person-card-title span { font-family: "DM Sans", sans-serif; font-size: 13px; font-weight: 400; }
+      .person-card-meta { margin: 0 0 12px; color: var(--muted); font-size: 11px; }
+      .person-card-actions { display: flex; gap: 8px; }
+      .soft-button, .primary-button {
+        min-height: 38px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--card);
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .primary-button { border-color: var(--rose); background: var(--rose); color: white; }
+      .soft-button:hover { border-color: var(--rose); color: var(--rose-dark); }
+      .primary-button:hover { background: var(--rose-dark); }
+      .section-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+      .section-tab { padding: 8px 13px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); color: var(--muted); font-size: 11px; cursor: pointer; }
+      .section-tab.active { border-color: var(--blush); background: var(--blush); color: var(--rose-dark); font-weight: 700; }
+      .connection-list { display: grid; gap: 10px; }
+      .connection-row {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--card);
+      }
+      .connection-row img { width: 52px; height: 52px; flex: 0 0 52px; border-radius: 50%; object-fit: cover; }
+      .connection-copy { min-width: 0; flex: 1; }
+      .connection-copy strong { display: block; font-size: 12px; }
+      .connection-copy span { display: block; overflow: hidden; margin-top: 4px; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+      .connection-row .primary-button, .connection-row .soft-button { flex: 0 0 auto; }
+      .chat-panel {
+        margin-top: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--card);
+      }
+      .chat-header { padding: 14px 17px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700; }
+      .chat-history { display: grid; min-height: 126px; max-height: 240px; align-content: start; gap: 9px; overflow: auto; padding: 15px; }
+      .chat-bubble { width: fit-content; max-width: 82%; padding: 9px 12px; border-radius: 14px 14px 14px 4px; background: var(--paper); color: var(--ink); font-size: 11px; line-height: 1.5; }
+      .chat-bubble.mine { justify-self: end; border-radius: 14px 14px 4px 14px; background: var(--blush); color: var(--ink); }
+      .chat-compose { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+      .chat-compose input { min-width: 0; flex: 1; padding: 10px 12px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); color: var(--ink); font: inherit; font-size: 11px; }
+      .chat-compose button { min-width: 68px; }
+      .profile-cover {
+        position: relative;
+        height: 200px;
+        margin-bottom: 60px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #f0d9d4, #e3e6dc 58%, #c9d6cf);
+      }
+      .profile-cover::after { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, #d8647025, transparent 60%); content: ""; }
+      .profile-large-avatar {
+        position: absolute;
+        z-index: 1;
+        bottom: -46px;
+        left: 22px;
+        width: 100px;
+        height: 100px;
+        border: 5px solid var(--paper);
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .profile-edit-form, .settings-card {
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--card);
+      }
+      .profile-edit-form { display: grid; gap: 15px; }
+      .form-field { display: grid; gap: 7px; }
+      .form-field label { font-size: 11px; font-weight: 700; }
+      .form-field input, .form-field textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--paper);
+        color: var(--ink);
+        font: inherit;
+        font-size: 12px;
+      }
+      .form-field textarea { min-height: 92px; resize: vertical; line-height: 1.5; }
+      .form-field input:focus, .form-field textarea:focus { border-color: var(--rose); outline: 2px solid #d8647030; }
+      .form-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .form-hint { margin: 0; color: var(--muted); font-size: 10px; }
+      .settings-list { display: grid; gap: 12px; }
+      .settings-card { display: flex; align-items: center; gap: 15px; }
+      .settings-icon {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--blush);
+        color: var(--rose-dark);
+      }
+      .settings-icon svg { width: 19px; height: 19px; }
+      .settings-copy { flex: 1; }
+      .settings-copy strong { display: block; font-size: 12px; }
+      .settings-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+      .switch { position: relative; width: 44px; height: 25px; flex: 0 0 44px; }
+      .switch input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .switch-track { position: absolute; inset: 0; border-radius: 20px; background: #c8c3bf; cursor: pointer; transition: background .2s; }
+      .switch-track::after { position: absolute; top: 3px; left: 3px; width: 19px; height: 19px; border-radius: 50%; background: white; box-shadow: 0 1px 3px #0002; content: ""; transition: transform .2s; }
+      .switch input:checked + .switch-track { background: var(--rose); }
+      .switch input:checked + .switch-track::after { transform: translateX(19px); }
+      .switch input:focus-visible + .switch-track { outline: 3px solid #d8647070; outline-offset: 3px; }
+
+      html[data-theme="dark"] {
+        color-scheme: dark;
+        --ink: #f1eeec;
+        --muted: #aaa4a1;
+        --paper: #191819;
+        --card: #242223;
+        --line: #393536;
+        --rose: #df7882;
+        --rose-dark: #ee8992;
+        --blush: #432c30;
+        --green: #91b59b;
+        --shadow: 0 22px 60px rgb(0 0 0 / 28%);
+      }
+      html[data-theme="dark"] body { background: var(--paper); }
+      html[data-theme="dark"] .topbar { background: rgb(31 29 30 / 94%); }
+      html[data-theme="dark"] .icon-button,
+      html[data-theme="dark"] .action-button,
+      html[data-theme="dark"] .prompt-card { background: var(--card); color: var(--ink); }
+      html[data-theme="dark"] .avatar-small { border-color: var(--card); }
+      html[data-theme="dark"] .nav-item { color: #c3bcba; }
+      html[data-theme="dark"] .nav-item:hover { background: #302d2e; }
+      html[data-theme="dark"] .sidebar-note { border-color: var(--line); background: #242122; }
+      html[data-theme="dark"] .likes-card { border-color: var(--line); background: linear-gradient(135deg, #302729, #302426); }
+      html[data-theme="dark"] .blurred-likes img { border-color: #494244; }
+      html[data-theme="dark"] .match-note { background: #292e29; }
+      html[data-theme="dark"] .match-note-icon { background: #343d34; color: #a4c3a5; }
+      html[data-theme="dark"] .new-pill { background: #432c30; }
+      html[data-theme="dark"] .section-tab.active { background: var(--blush); }
+      html[data-theme="dark"] .profile-cover { background: linear-gradient(135deg, #50383b, #373b34 58%, #33433b); }
+      html[data-theme="dark"] .toast { border-color: var(--line); background: var(--card); color: var(--ink); }
+      html[data-theme="dark"] .bottom-nav { border-color: var(--line); background: rgb(31 29 30 / 96%); }
+      html[data-theme="dark"] .action-button.like { background: var(--rose); color: white; }
+      html[data-theme="dark"] .nav-count { background: var(--card); }
+      html[data-theme="dark"] .close-modal { background: #383435; color: var(--ink); }
+      .layout[data-page]:not([data-page="Discover"]) .right-rail { display: none; }
+      .layout[data-page]:not([data-page="Discover"]) { grid-template-columns: 224px minmax(380px, 1fr); }
+
+      .toast {
+        position: fixed;
+        z-index: 8;
+        right: 24px;
+        bottom: 24px;
+        padding: 13px 17px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+        box-shadow: var(--shadow);
+        color: var(--ink);
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(12px);
+        transition: opacity .2s, transform .2s;
+      }
+      .toast.visible { opacity: 1; transform: translateY(0); }
+      .match-overlay {
+        position: fixed;
+        z-index: 10;
+        inset: 0;
+        display: none;
+        place-items: center;
+        padding: 20px;
+        background: rgb(39 31 31 / 50%);
+        backdrop-filter: blur(5px);
+      }
+      .match-overlay.open { display: grid; }
+      .match-modal {
+        position: relative;
+        width: min(390px, 100%);
+        padding: 36px 28px 29px;
+        border-radius: 24px;
+        background: var(--card);
+        box-shadow: 0 25px 80px #21171640;
+        text-align: center;
+        animation: pop .25s ease-out;
+      }
+      @keyframes pop { from { transform: scale(.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+      .close-modal { position: absolute; top: 13px; right: 13px; width: 33px; height: 33px; border: 0; border-radius: 50%; background: #f7f1ee; color: #77716d; font-size: 20px; cursor: pointer; }
+      .match-hearts { display: flex; justify-content: center; align-items: center; margin: 4px 0 20px; }
+      .match-hearts img { width: 75px; height: 75px; border: 4px solid white; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px var(--line); }
+      .match-hearts img + img { margin-left: -17px; }
+      .match-hearts span { position: absolute; margin-top: -66px; margin-left: 9px; color: var(--rose); font-size: 21px; }
+      .match-modal h2 { margin: 0 0 8px; color: var(--rose-dark); font-family: "Playfair Display", serif; font-size: 30px; }
+      .match-modal p { margin: 0 auto 21px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+      .message-button { width: 100%; padding: 13px; border: 0; border-radius: 11px; background: var(--rose); color: white; font-size: 12px; font-weight: 700; cursor: pointer; }
+      .keep-swiping { display: block; margin: 14px auto 0; border: 0; background: none; color: var(--muted); font-size: 11px; cursor: pointer; }
+
+      @media (max-width: 1120px) {
+        .layout { grid-template-columns: 190px minmax(360px, 1fr); gap: 34px; }
+        .right-rail { display: none; }
+      }
+      @media (max-width: 760px) {
+        .topbar { height: 66px; padding: 0 20px; }
+        .brand { font-size: 25px; }
+        .topbar-center { display: none; }
+        .topbar-actions { gap: 10px; }
+        .icon-button { width: 38px; height: 38px; }
+        .layout { display: block; min-height: calc(100vh - 66px); padding: 23px 20px 100px; }
+        .sidebar { display: block; min-height: 0; }
+        .profile-summary, .sidebar .nav-label, .sidebar .nav-list, .sidebar-note { display: none; }
+        .main-content { max-width: 540px; margin: 0 auto; }
+        .section-heading { margin: 3px 0 17px; }
+        .discover-card { height: min(64vh, 590px); min-height: 420px; }
+        .actions { padding-top: 18px; }
+        .bottom-nav {
+          position: fixed;
+          z-index: 5;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          display: flex;
+          justify-content: space-around;
+          padding: 9px 9px max(9px, env(safe-area-inset-bottom));
+          border-top: 1px solid var(--line);
+          background: rgb(255 254 253 / 96%);
+          backdrop-filter: blur(12px);
+        }
+        .bottom-nav button { display: grid; min-width: 0; flex: 1; justify-items: center; gap: 3px; padding: 3px; border: 0; background: none; color: #8b8580; font-size: 9px; cursor: pointer; }
+        .bottom-nav button svg { width: 20px; height: 20px; }
+        .bottom-nav button.active { color: var(--rose-dark); }
+      }
+      @media (min-width: 761px) {
+        .bottom-nav { display: none; }
+      }
+      @media (max-width: 430px) {
+        .layout { padding-right: 14px; padding-left: 14px; }
+        .section-heading { align-items: center; }
+        .filter-button { padding: 9px 10px; }
+        .discover-card { min-height: 400px; border-radius: 18px; }
+        .card-info { right: 17px; bottom: 18px; left: 17px; }
+        .name-line h2 { font-size: 28px; }
+        .bio { font-size: 11px; }
+        .action-button.like { width: 58px; height: 58px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="kindred home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20.3 5.8a5 5 0 0 0-7.1 0L12 7l-1.2-1.2a5 5 0 0 0-7.1 7.1l1.2 1.2L12 21l7.1-6.9 1.2-1.2a5 5 0 0 0 0-7.1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          kindred
+        </a>
+        <div class="topbar-center"><span class="location-dot"></span> Discovering near Brooklyn, NY</div>
+        <div class="topbar-actions">
+          <button class="icon-button" aria-label="Notifications" data-toast="You're all caught up!">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="notification"></span>
+          </button>
+          <img class="avatar-small" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=85" alt="Your profile" />
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar" aria-label="Main navigation">
+          <div class="profile-summary">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=85" alt="" />
+            <div><strong>Alex Morgan</strong><span>Profile strength · 85%</span></div>
+          </div>
+          <p class="nav-label">Your space</p>
+          <nav class="nav-list">
+            <button class="nav-item active" data-section="Discover">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m20 20-4-4M11 8v6m-3-3h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <span>Discover</span>
+            </button>
+            <button class="nav-item" data-section="Likes">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20.3 5.8a5 5 0 0 0-7.1 0L12 7l-1.2-1.2a5 5 0 0 0-7.1 7.1l1.2 1.2L12 21l7.1-6.9 1.2-1.2a5 5 0 0 0 0-7.1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              <span>Likes you</span><b class="nav-count">3</b>
+            </button>
+            <button class="nav-item" data-section="Matches">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M14 3.13a4 4 0 0 1 0 7.75M10 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Matches</span>
+            </button>
+            <button class="nav-item" data-section="Messages">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Messages</span><b class="nav-count">2</b>
+            </button>
+          </nav>
+          <p class="nav-label">Account</p>
+          <nav class="nav-list">
+            <button class="nav-item" data-section="My profile">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M5 21v-2a7 7 0 0 1 14 0v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <span>My profile</span>
+            </button>
+            <button class="nav-item" data-section="Settings">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/><path d="m19.4 15 .1.1a1.7 1.7 0 1 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.3a1.7 1.7 0 1 1-3.4 0v-.2A1.7 1.7 0 0 0 8 17.5l-.1.1a1.7 1.7 0 1 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9h-.3a1.7 1.7 0 1 1 0-3.4h.2A1.7 1.7 0 0 0 5.5 6l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2v-.3a1.7 1.7 0 1 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.3l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.3a1.7 1.7 0 1 1 0 3.4h-.2a1.7 1.7 0 0 0-1.4 2.7Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Settings</span>
+            </button>
+          </nav>
+          <div class="sidebar-note">
+            <span class="note-icon">✳</span>
+            <strong>Good things take a little time</strong>
+            <p>Show up as yourself. Your kind of person will notice.</p>
+          </div>
+        </aside>
+
+        <main class="main-content">
+          <div id="discover-view">
+          <div class="section-heading">
+            <div><p class="eyebrow">A little closer to your person</p><h1>Discover someone new</h1></div>
+            <button class="filter-button" data-toast="Your preferences are all set.">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h10m4 0h2M4 17h2m4 0h10M14 4v6M8 14v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              Filters
+            </button>
+          </div>
+
+          <article class="discover-card" aria-label="Suggested profile">
+            <img class="discover-photo" id="profile-photo" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=1100&q=90" alt="Jordan smiling outdoors" />
+            <div class="photo-count" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="verified">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m9 12 2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Photo verified
+            </div>
+            <div class="online">Active now</div>
+            <div class="card-info">
+              <div class="name-line"><h2 id="profile-name">Jordan</h2><span id="profile-age">28</span></div>
+              <p class="card-location">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg>
+                <span id="profile-location">1 mile away · Brooklyn</span>
+              </p>
+              <p class="bio" id="profile-bio">Probably asking to pet your dog before I ask your name. Big fan of slow Sundays and finding the best dumplings in the city.</p>
+              <div class="interest-list" id="profile-interests">
+                <span class="interest">Sunday farmers markets</span><span class="interest">Live music</span><span class="interest">Dogs</span>
+              </div>
+            </div>
+          </article>
+          <div class="actions" aria-label="Profile actions">
+            <button class="action-button pass" id="pass-button" aria-label="Pass on Jordan" title="Pass">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m18 6-12 12M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <button class="action-button super" id="super-button" aria-label="Send a thoughtful like" title="Send a thoughtful like">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m12 3 1.8 5.5L19 10l-5.2 1.7L12 17l-1.8-5.3L5 10l5.2-1.5L12 3Zm6 12 .9 2.1L21 18l-2.1.8L18 21l-.8-2.2L15 18l2.2-.9L18 15Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="action-button like" id="like-button" aria-label="Like Jordan" title="Like">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20.3 5.8a5 5 0 0 0-7.1 0L12 7l-1.2-1.2a5 5 0 0 0-7.1 7.1l1.2 1.2L12 21l7.1-6.9 1.2-1.2a5 5 0 0 0 0-7.1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <p class="caption">A thoughtful like goes a long way ✨</p>
+          </div>
+          <section class="page-view" id="page-view" aria-live="polite" hidden></section>
+        </main>
+
+        <aside class="right-rail" aria-label="Your connections">
+          <div class="rail-heading"><h2>A little love</h2><button data-toast="You're all caught up!">See all</button></div>
+          <div class="likes-card">
+            <div class="blurred-likes" aria-hidden="true">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=100&q=80" alt="" />
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="" />
+            </div>
+            <div class="likes-copy"><strong>3 people like you</strong><span>Someone lovely might be waiting.</span><button data-section="Likes">Take a peek →</button></div>
+          </div>
+          <div class="rail-divider"></div>
+          <div class="match-note">
+            <span class="match-note-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18m9-9H3m15.4-6.4-12.8 13m0-13 12.8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div><strong>More than a pretty face</strong><p>We look for shared interests and values, not just a swipe.</p></div>
+          </div>
+          <h3 class="recent-heading">Your recent connections</h3>
+          <div class="recent-list">
+            <div class="recent-match">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=120&q=85" alt="" />
+              <div><strong>Sam, 27</strong><span>Matched yesterday</span></div><span class="new-pill">NEW</span>
+            </div>
+            <div class="recent-match">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=85" alt="" />
+              <div><strong>Riley, 30</strong><span>Matched Monday</span></div>
+            </div>
+          </div>
+          <div class="prompt-card">
+            <p class="eyebrow">A good conversation starter</p>
+            <p>“What’s a small thing that always makes your day better?”</p>
+            <span>Save this one for your next hello.</span>
+          </div>
+        </aside>
+      </div>
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <button class="active" data-section="Discover"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m20 20-4-4m-5-8v6m-3-3h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Discover</button>
+        <button data-section="Likes"><svg viewBox="0 0 24 24" fill="none"><path d="M20.3 5.8a5 5 0 0 0-7.1 0L12 7l-1.2-1.2a5 5 0 0 0-7.1 7.1l1.2 1.2L12 21l7.1-6.9 1.2-1.2a5 5 0 0 0 0-7.1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>Likes</button>
+        <button data-section="Matches"><svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M10 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Matches</button>
+        <button data-section="Messages"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Messages</button>
+        <button data-section="My profile"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M5 21v-2a7 7 0 0 1 14 0v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Profile</button>
+        <button data-section="Settings"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="9" cy="7" r="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="12" r="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.7"/><circle cx="10" cy="17" r="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.7"/></svg>Settings</button>
+      </nav>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="match-overlay" id="match-overlay" role="dialog" aria-modal="true" aria-labelledby="match-title">
+      <div class="match-modal">
+        <button class="close-modal" id="close-match" aria-label="Close">×</button>
+        <div class="match-hearts">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=180&q=85" alt="Your profile" />
+          <img id="match-photo" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=180&q=85" alt="Your new match" />
+          <span>♥</span>
+        </div>
+        <h2 id="match-title">It’s a match!</h2>
+        <p id="match-description">You and Jordan like each other. That’s a pretty lovely start.</p>
+        <button class="message-button" id="message-match">Say hello to Jordan</button>
+        <button class="keep-swiping" id="keep-swiping">Keep discovering</button>
+      </div>
+    </div>
+    <script>
+      const profiles = [
+        {
+          name: "Jordan",
+          age: 28,
+          location: "1 mile away · Brooklyn",
+          bio: "Probably asking to pet your dog before I ask your name. Big fan of slow Sundays and finding the best dumplings in the city.",
+          interests: ["Sunday farmers markets", "Live music", "Dogs"],
+          photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=1100&q=90",
+          alt: "Jordan smiling outdoors",
+        },
+        {
+          name: "Taylor",
+          age: 29,
+          location: "2 miles away · Park Slope",
+          bio: "Amateur pasta maker, professional playlist curator. Looking for someone to split a very large tiramisu with.",
+          interests: ["Cooking", "Indie films", "Long walks"],
+          photo: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1100&q=90",
+          alt: "Taylor enjoying a sunny afternoon",
+        },
+        {
+          name: "Casey",
+          age: 27,
+          location: "3 miles away · Fort Greene",
+          bio: "Weekend hikes, weekday ceramics, and always stopping to admire somebody's dog. Here for the real, easy kind of connection.",
+          interests: ["Hiking", "Ceramics", "Coffee"],
+          photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1100&q=90",
+          alt: "Casey smiling for a portrait",
+        },
+      ];
+      let profileIndex = 0;
+      let toastTimer;
+      const toast = document.getElementById("toast");
+      const overlay = document.getElementById("match-overlay");
+      const discoverView = document.getElementById("discover-view");
+      const pageView = document.getElementById("page-view");
+      const currentUser = { name: "Alex Morgan", age: "27", location: "Brooklyn, NY", bio: "Here for good conversation, great food, and the kind of connection that feels easy." };
+      let activeMatchName = "Jordan";
+      const savedProfile = getSavedValue("kindred-profile", null);
+      if (savedProfile && typeof savedProfile.name === "string" && typeof savedProfile.age === "string" && typeof savedProfile.location === "string" && typeof savedProfile.bio === "string") {
+        Object.assign(currentUser, savedProfile);
+      }
+      const matches = [
+        { name: "Sam", age: 27, note: "Matched yesterday", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=240&q=85" },
+        { name: "Riley", age: 30, note: "Matched Monday", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85" },
+        { name: "Jordan", age: 28, note: "You both love live music", photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=240&q=85" },
+      ];
+      const incomingLikes = [
+        { name: "Jamie", age: 27, location: "2 miles away · Williamsburg", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=560&q=85" },
+        { name: "Morgan", age: 29, location: "4 miles away · Queens", photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=560&q=85" },
+        { name: "Avery", age: 26, location: "1 mile away · Brooklyn", photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=560&q=85" },
+      ];
+      const dismissedLikes = new Set();
+      let matchCount = incomingLikes.length;
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2400);
+      }
+
+      function getSavedValue(key, fallback) {
+        try {
+          const value = window.localStorage.getItem(key);
+          return value === null ? fallback : JSON.parse(value);
+        } catch (error) {
+          showToast("Your browser couldn't load saved preferences. You can still use this page.");
+          return fallback;
+        }
+      }
+
+      function saveValue(key, value) {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (error) {
+          showToast("This change couldn't be saved in your browser.");
+          return false;
+        }
+      }
+
+      function setTheme(isDark, persist = true) {
+        document.documentElement.dataset.theme = isDark ? "dark" : "light";
+        document.querySelector('meta[name="theme-color"]').content = isDark ? "#191819" : "#fbf8f5";
+        const themeSwitch = document.getElementById("dark-mode-toggle");
+        if (themeSwitch) themeSwitch.checked = isDark;
+        if (persist) saveValue("kindred-dark-mode", isDark);
+      }
+
+      function personCard(name, age, location, photo, note) {
+        return `<article class="person-card">
+          <img class="person-card-photo" src="${photo}" alt="${name}, ${age}" />
+          <div class="person-card-body">
+            <h2 class="person-card-title">${name}<span>${age}</span></h2>
+            <p class="person-card-meta">${location}</p>
+            <div class="person-card-actions">
+              <button class="primary-button" data-like-back="${name}" data-photo="${photo}">Like back</button>
+              <button class="soft-button" data-pass-like="${name}">Not now</button>
+            </div>
+          </div>
+        </article>`;
+      }
+
+      function connectionRow(person, actionLabel, action = "open-chat") {
+        return `<div class="connection-row">
+          <img src="${person.photo}" alt="" />
+          <div class="connection-copy"><strong>${person.name}, ${person.age}</strong><span>${person.note}</span></div>
+          <button class="${action === "open-chat" ? "primary-button" : "soft-button"}" data-${action}="${person.name}">${actionLabel}</button>
+        </div>`;
+      }
+
+      function renderPage(section) {
+        discoverView.hidden = section !== "Discover";
+        pageView.hidden = section === "Discover";
+        document.querySelector(".layout").dataset.page = section;
+        document.querySelectorAll(".nav-item, .bottom-nav button").forEach((item) => {
+          item.classList.toggle("active", item.dataset.section === section);
+        });
+        if (section === "Discover") return;
+
+        const pageTemplates = {
+          Likes: () => `<div class="page-header"><p class="eyebrow">A little love coming your way</p><h1>People who like you</h1><p class="page-description">${matchCount} people are hoping to meet you. If the feeling is mutual, send a like back.</p></div>
+            <div class="section-tabs"><button class="section-tab active">All <span id="likes-count">${matchCount}</span></button><button class="section-tab" data-toast="You're seeing all your incoming likes.">Newest</button></div>
+            <div class="people-grid" id="likes-grid">${incomingLikes.filter((person) => !dismissedLikes.has(person.name)).map((person) => personCard(person.name, person.age, person.location, person.photo)).join("")}</div>`,
+          Matches: () => `<div class="page-header"><p class="eyebrow">The start of something</p><h1>Your connections</h1><p class="page-description">Every good story starts somewhere. Pick up where you left off.</p></div>
+            <div class="connection-list">${matches.map((person) => connectionRow(person, "Say hello")).join("")}</div>`,
+          Messages: () => `<div class="page-header"><p class="eyebrow">Good conversations start here</p><h1>Your messages</h1><p class="page-description">A thoughtful hello can turn a match into something more.</p></div>
+            <div class="connection-list">${matches.slice(0, 2).map((person, index) => connectionRow({ ...person, note: index === 0 ? "That little coffee place looks perfect ☕" : "You: I’ll bring the playlist!" }, "Open chat")).join("")}</div>
+            <div class="chat-panel" id="chat-panel" hidden><div class="chat-header" id="chat-header"></div><div class="chat-history" id="chat-history"></div><form class="chat-compose" id="chat-form"><input id="chat-input" aria-label="Write a message" maxlength="500" placeholder="Write a thoughtful hello…" required /><button class="primary-button" type="submit">Send</button></form></div>
+            <div class="prompt-card"><p class="eyebrow">Need an opener?</p><p>“What’s something you could talk about for hours?”</p><span>Curiosity makes a lovely first message.</span></div>`,
+          "My profile": () => `<div class="page-header"><p class="eyebrow">The best part is being yourself</p><h1>My profile</h1><p class="page-description">A few little details help your kind of person find you.</p></div>
+            <div class="profile-cover"><img class="profile-large-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85" alt="Alex Morgan" /></div>
+            <form class="profile-edit-form" id="profile-form">
+              <div class="form-field"><label for="profile-edit-name">Your name</label><input id="profile-edit-name" name="name" maxlength="40" required /></div>
+              <div class="form-field"><label for="profile-edit-age">Age</label><input id="profile-edit-age" name="age" type="number" min="18" max="99" required /></div>
+              <div class="form-field"><label for="profile-edit-location">City</label><input id="profile-edit-location" name="location" maxlength="60" required /></div>
+              <div class="form-field"><label for="profile-edit-bio">A little about you</label><textarea id="profile-edit-bio" name="bio" maxlength="240" required></textarea></div>
+              <div class="form-footer"><p class="form-hint">A little personality goes a long way.</p><button class="primary-button" type="submit">Save profile</button></div>
+            </form>`,
+          Settings: () => `<div class="page-header"><p class="eyebrow">Make yourself at home</p><h1>Settings</h1><p class="page-description">A few ways to make kindred feel right for you.</p></div>
+            <div class="settings-list">
+              <div class="settings-card"><span class="settings-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5a8.5 8.5 0 1 0 12 12Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="settings-copy"><strong>Dark mode</strong><span>A softer look for evening browsing.</span></div><label class="switch" aria-label="Toggle dark mode"><input type="checkbox" id="dark-mode-toggle" /><span class="switch-track"></span></label></div>
+              <div class="settings-card"><span class="settings-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="settings-copy"><strong>Notifications</strong><span>Keep up with new likes and messages.</span></div><label class="switch" aria-label="Toggle notifications"><input type="checkbox" id="notifications-toggle" checked /><span class="switch-track"></span></label></div>
+              <div class="settings-card"><span class="settings-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div class="settings-copy"><strong>Privacy &amp; safety</strong><span>Your profile is only shown to people who fit your preferences.</span></div><button class="soft-button" data-toast="Your profile is visible to people nearby.">Review</button></div>
+            </div>`,
+        };
+        pageView.innerHTML = pageTemplates[section] ? pageTemplates[section]() : "";
+
+        if (section === "Settings") {
+          document.getElementById("dark-mode-toggle").checked = document.documentElement.dataset.theme === "dark";
+          document.getElementById("notifications-toggle").checked = getSavedValue("kindred-notifications", true);
+        }
+        if (section === "My profile") {
+          document.getElementById("profile-edit-name").value = currentUser.name;
+          document.getElementById("profile-edit-age").value = currentUser.age;
+          document.getElementById("profile-edit-location").value = currentUser.location;
+          document.getElementById("profile-edit-bio").value = currentUser.bio;
+        }
+      }
+
+      function showConversation(name) {
+        const person = matches.find((match) => match.name === name);
+        if (!person) {
+          showToast("That conversation isn't available right now.");
+          return;
+        }
+        const chatPanel = document.getElementById("chat-panel");
+        if (!chatPanel) return;
+        chatPanel.hidden = false;
+        document.getElementById("chat-header").textContent = `A little hello with ${person.name}`;
+        const history = document.getElementById("chat-history");
+        history.replaceChildren();
+        const firstMessage = document.createElement("div");
+        firstMessage.className = "chat-bubble";
+        firstMessage.textContent = person.name === "Sam" ? "That little coffee place looks perfect ☕" : "You: I’ll bring the playlist!";
+        history.append(firstMessage);
+        chatPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      function renderProfile() {
+        const profile = profiles[profileIndex];
+        document.getElementById("profile-photo").src = profile.photo;
+        document.getElementById("profile-photo").alt = profile.alt;
+        document.getElementById("profile-name").textContent = profile.name;
+        document.getElementById("profile-age").textContent = profile.age;
+        document.getElementById("profile-location").textContent = profile.location;
+        document.getElementById("profile-bio").textContent = profile.bio;
+        document.getElementById("profile-interests").innerHTML = profile.interests
+          .map((interest) => `<span class="interest">${interest}</span>`)
+          .join("");
+        document.getElementById("like-button").setAttribute("aria-label", `Like ${profile.name}`);
+        document.getElementById("pass-button").setAttribute("aria-label", `Pass on ${profile.name}`);
+      }
+
+      function nextProfile(action) {
+        const current = profiles[profileIndex];
+        if (action === "like" && profileIndex === 0) {
+          activeMatchName = current.name;
+          document.getElementById("match-photo").src = current.photo;
+          document.getElementById("match-description").textContent = `You and ${current.name} like each other. That’s a pretty lovely start.`;
+          document.getElementById("message-match").textContent = `Say hello to ${current.name}`;
+          overlay.classList.add("open");
+        } else {
+          showToast(action === "like" ? `Like sent to ${current.name} 💌` : `Moving along — there are more lovely people to meet.`);
+        }
+        profileIndex = (profileIndex + 1) % profiles.length;
+        renderProfile();
+      }
+
+      document.getElementById("like-button").addEventListener("click", () => nextProfile("like"));
+      document.getElementById("pass-button").addEventListener("click", () => nextProfile("pass"));
+      document.getElementById("super-button").addEventListener("click", () => {
+        const name = profiles[profileIndex].name;
+        showToast(`A thoughtful like is on its way to ${name} ✨`);
+        profileIndex = (profileIndex + 1) % profiles.length;
+        renderProfile();
+      });
+      document.getElementById("close-match").addEventListener("click", () => overlay.classList.remove("open"));
+      document.getElementById("keep-swiping").addEventListener("click", () => overlay.classList.remove("open"));
+      document.getElementById("message-match").addEventListener("click", () => {
+        overlay.classList.remove("open");
+        if (!matches.some((person) => person.name === activeMatchName)) {
+          matches.unshift({ name: activeMatchName, age: 28, note: "Just matched", photo: document.getElementById("match-photo").src });
+        }
+        renderPage("Messages");
+        showConversation(activeMatchName);
+        showToast("Your new conversation is ready when you are 💬");
+      });
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) overlay.classList.remove("open");
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") overlay.classList.remove("open");
+      });
+      document.querySelectorAll("[data-section]").forEach((button) => {
+        button.addEventListener("click", () => {
+          renderPage(button.dataset.section);
+        });
+      });
+      document.addEventListener("click", (event) => {
+        const target = event.target.closest("button");
+        if (!target) return;
+        if (target.dataset.toast) showToast(target.dataset.toast);
+        if (target.dataset.likeBack) {
+          activeMatchName = target.dataset.likeBack;
+          document.getElementById("match-photo").src = target.dataset.photo;
+          document.getElementById("match-description").textContent = `You and ${target.dataset.likeBack} like each other. That’s a pretty lovely start.`;
+          document.getElementById("message-match").textContent = `Say hello to ${target.dataset.likeBack}`;
+          overlay.classList.add("open");
+          target.closest(".person-card").remove();
+          dismissedLikes.add(target.dataset.likeBack);
+          matchCount = Math.max(0, matchCount - 1);
+          const count = document.getElementById("likes-count");
+          if (count) count.textContent = matchCount;
+        }
+        if (target.dataset.passLike) {
+          target.closest(".person-card").remove();
+          dismissedLikes.add(target.dataset.passLike);
+          matchCount = Math.max(0, matchCount - 1);
+          const count = document.getElementById("likes-count");
+          if (count) count.textContent = matchCount;
+          showToast(`No worries — ${target.dataset.passLike} has been passed for now.`);
+        }
+        if (target.dataset.openChat) {
+          if (document.querySelector(".layout").dataset.page !== "Messages") renderPage("Messages");
+          showConversation(target.dataset.openChat);
+        }
+      });
+      document.addEventListener("change", (event) => {
+        if (event.target.id === "dark-mode-toggle") {
+          setTheme(event.target.checked);
+          showToast(event.target.checked ? "Dark mode is on." : "Light mode is on.");
+        }
+        if (event.target.id === "notifications-toggle") {
+          if (saveValue("kindred-notifications", event.target.checked)) {
+            showToast(event.target.checked ? "Notifications are on." : "Notifications are off.");
+          }
+        }
+      });
+      document.addEventListener("submit", (event) => {
+        if (event.target.id === "profile-form") {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const age = Number(formData.get("age"));
+          if (!Number.isInteger(age) || age < 18 || age > 99) {
+            showToast("Please enter an age between 18 and 99.");
+            return;
+          }
+          Object.assign(currentUser, {
+            name: String(formData.get("name")).trim(),
+            age: String(age),
+            location: String(formData.get("location")).trim(),
+            bio: String(formData.get("bio")).trim(),
+          });
+          const saved = saveValue("kindred-profile", currentUser);
+          document.querySelector(".profile-summary strong").textContent = currentUser.name;
+          document.querySelector(".avatar-small").alt = `${currentUser.name}'s profile`;
+          showToast(saved ? "Your profile has been saved." : "Your profile is updated for now, but couldn't be saved.");
+        }
+        if (event.target.id === "chat-form") {
+          event.preventDefault();
+          const input = document.getElementById("chat-input");
+          const message = input.value.trim();
+          if (!message) return;
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble mine";
+          bubble.textContent = message;
+          document.getElementById("chat-history").append(bubble);
+          input.value = "";
+          bubble.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      });
+      setTheme(getSavedValue("kindred-dark-mode", false), false);
+      renderProfile();
+    </script>
+  </body>
+</html>
